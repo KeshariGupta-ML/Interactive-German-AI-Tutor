@@ -1,0 +1,8 @@
+langchain-core
+langchain-google-genai
+pydantic
+python-dotenv
+fastapi
+uvicorn
+passlib[bcrypt]==1.7.4
+bcrypt==4.3.0

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Practice German - AI Tutor{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0 d-flex flex-column" style="height: 500px;">
+            <div class="card-header bg-white font-weight-bold border-bottom py-3">
+                💬 Chatting with Lukas (A1 Level)
+            </div>
+            <div class="card-body overflow-auto flex-grow-1 p-3" id="chat-window" style="background-color: #fdfdfd;">
+                <div class="mb-3">
+                    <span class="badge bg-secondary p-2 mb-1">Lukas (Tutor)</span>
+                    <div class="bg-light p-3 rounded-3 border w-75">Hallo! Ich bin Lukas. Wie geht es dir today?</div>
+                </div>
+            </div>
+            <div class="card-footer bg-white border-top p-3">
+                <form id="chat-form" class="input-group">
+                    <input type="text" id="user-input" class="form-control py-2" placeholder="Write your German response here..." required>
+                    <button class="btn btn-primary px-4" type="submit">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 p-3 mb-3 bg-light border-start border-warning border-4" id="correction-panel" style="display: none;">
+            <h5 class="text-warning font-weight-bold">💡 Gentle Grammar Fix</h5>
+            <p id="correction-text" class="small mb-0 text-dark"></p>
+        </div>
+        
+        <div class="card shadow-sm border-0 p-3">
+            <h5>🎯 Tracked Vocabulary</h5>
+            <div id="vocab-container" class="d-flex flex-wrap gap-2 mt-2">
+                <span class="text-muted small">No keywords detected yet. Keep speaking!</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('chat-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const inputEl = document.getElementById('user-input');
+    const msg = inputEl.value;
+
+    // FIX: Use JavaScript's native .trim() method instead of Python's .strip
+    if (!msg || !msg.trim()) return;
+
+    // Append user bubble instantly to window
+    const windowEl = document.getElementById('chat-window');
+    windowEl.innerHTML += `<div class="text-end mb-3"><span class="badge bg-primary p-2 mb-1">You</span><div class="bg-primary text-white p-3 rounded-3 d-inline-block text-start w-75">${msg}</div></div>`;
+    inputEl.value = '';
+    windowEl.scrollTop = windowEl.scrollHeight;
+
+    try {
+        // Post data asynchronously to our router endpoint
+        const response = await fetch('/chat/send', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ session_id: 1, student_input: msg })
+        });
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            // Append tutor bubble response
+            windowEl.innerHTML += `<div class="mb-3"><span class="badge bg-secondary p-2 mb-1">Lukas (Tutor)</span><div class="bg-light p-3 rounded-3 border w-75">${data.reply}<br><small class="text-muted">💡 Hint: ${data.translation}</small></div></div>`;
+
+            // Show or hide grammar corrections card dynamically
+            const fixPanel = document.getElementById('correction-panel');
+            if (data.corrections) {
+                document.getElementById('correction-text').innerText = data.corrections;
+                fixPanel.style.display = 'block';
+            } else {
+                fixPanel.style.display = 'none';
+            }
+
+            // DYNAMIC UPDATE: Render tracked vocabulary tags in the sidebar
+            const vocabContainer = document.getElementById('vocab-container');
+            if (data.vocabulary && data.vocabulary.length > 0) {
+                vocabContainer.innerHTML = ''; // Clear out the placeholder text
+                data.vocabulary.forEach(word => {
+                    vocabContainer.innerHTML += `<span class="badge bg-success p-2">${word}</span>`;
+                });
+            }
+        } else {
+            alert("Error from tutor engine: " + data.detail);
+        }
+    } catch (error) {
+        console.error("Network Error:", error);
+        alert("Could not reach the backend server. Make sure your FastAPI server is running.");
+    }
+
+    windowEl.scrollTop = windowEl.scrollHeight;
+});
+</script>
+{% endblock %}

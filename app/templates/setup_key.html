@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}API Settings - German Tutor{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        
+        {% if error == "missing_key" %}
+        <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-4" role="alert">
+            <span class="fs-4 me-2">⚠️</span>
+            <div><strong>Action Required:</strong> You need to add a Gemini API key before you can start conversing with your German Tutor.</div>
+        </div>
+        {% endif %}
+
+        <div class="card shadow-sm border-0 p-4 mb-4">
+            <h3 class="mb-3">Configure Your AI Engine Key</h3>
+            <p class="text-muted">This application runs on a <strong>Bring Your Own Key (BYOK)</strong> infrastructure. Your key is stored securely and is only utilized to compute your personal training sessions.</p>
+            
+            <hr class="my-4">
+
+            <form action="/auth/update-key" method="POST">
+                <div class="mb-3">
+                    <label class="form-label font-weight-bold fw-semibold">Your Google Gemini API Key</label>
+                    <input type="password" name="gemini_api_key" class="form-control form-control-lg font-monospace" placeholder="AIzaSy..." required>
+                    <div class="form-text mt-2 text-muted">Keys typically begin with <code>AIzaSy</code>. We never share your key with third parties.</div>
+                </div>
+                <button type="submit" class="btn btn-success px-4 py-2 fw-bold">Save and Connect Engine</button>
+            </form>
+        </div>
+
+        <div class="card shadow-sm border-0 p-4">
+            <h4 class="mb-3">📋 How to Get a Free Gemini API Key</h4>
+            <p class="text-muted">Follow these simple steps to generate a developer credentials credential within 2 minutes:</p>
+            
+            <div class="position-relative border-start border-2 border-primary ps-3 my-3">
+                <span class="badge bg-primary position-absolute top-0 start-0 translate-middle rounded-circle" style="margin-left: -8px; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center;">1</span>
+                <h5>Open Google AI Studio</h5>
+                <p class="text-muted small mb-0">Navigate to the official portal at <a href="https://aistudio.google.com" target="_blank" class="fw-bold text-decoration-none">Google AI Studio ↗</a> and log in using your standard personal Gmail account.</p>
+            </div>
+
+            <div class="position-relative border-start border-2 border-primary ps-3 my-3">
+                <span class="badge bg-primary position-absolute top-0 start-0 translate-middle rounded-circle" style="margin-left: -8px; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center;">2</span>
+                <h5>Generate Key Credentials</h5>
+                <p class="text-muted small mb-0">Click the blue <strong>"Get API Key"</strong> or <strong>"Create API key"</strong> button located in the top sidebar panel.</p>
+            </div>
+
+            <div class="position-relative border-start border-2 border-primary ps-3 my-3">
+                <span class="badge bg-primary position-absolute top-0 start-0 translate-middle rounded-circle" style="margin-left: -8px; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center;">3</span>
+                <h5>Confirm Project Scope</h5>
+                <p class="text-muted small mb-0">Select <em>"Create API key in a new project"</em>. This will set up an isolated sandbox workspace container automatically inside Google Cloud.</p>
+            </div>
+
+            <div class="position-relative border-start border-2 border-success ps-3 my-3">
+                <span class="badge bg-success position-absolute top-0 start-0 translate-middle rounded-circle" style="margin-left: -8px; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center;">4</span>
+                <h5>Copy & Paste</h5>
+                <p class="text-muted small mb-0">Copy the string character token generated on your screen, head back to this page, paste it into the field above, and click save!</p>
+            </div>
+
+            <div class="alert alert-info border-0 mt-3 mb-0 small" role="alert">
+                ℹ️ <strong>Cost Warning:</strong> The standard free tier includes up to 1,000 free processing requests every single day, which is more than enough for intensive learning practice.
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
